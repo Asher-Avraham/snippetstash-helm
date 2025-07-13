@@ -1,0 +1,28 @@
+# Patterns to ignore when packaging Helm charts.
+
+# Node modules
+node_modules/
+backend/node_modules/
+
+# Cypress
+cypress/
+
+# Jest
+__tests__/
+__mocks__/
+
+# Docker
+Dockerfile.frontend
+backend/Dockerfile
+docker-compose.yml
+.dockerignore
+
+# Git
+.git/
+.gitignore
+.github/
+
+# Other
+*.log
+dist/
+test-results/

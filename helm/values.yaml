@@ -1,0 +1,62 @@
+frontend:
+  image: ashiavraham/snippetshare-frontend:89212b1
+  tag: latest
+  replicas: 1
+  service:
+    type: ClusterIP
+    port: 80
+
+backend:
+  image: ashiavraham/snippetshare-backend:89212b1
+  tag: latest
+  replicas: 1
+  service:
+    type: ClusterIP
+    port: 3000
+  env:
+    - name: DB_HOST
+      value: "{{ .Release.Name }}-postgresql"
+    - name: DB_PORT
+      value: "5432"
+    - name: DB_USER
+      value: "postgres"
+    - name: DB_PASSWORD
+      valueFrom:
+        secretKeyRef:
+          name: "{{ .Release.Name }}-postgresql"
+          key: postgres-password
+    - name: DB_DATABASE
+      value: "snippets"
+
+ingress-nginx:
+  enabled: true
+  controller:
+    ingressClassResource:
+      name: nginx
+      enabled: true
+      default: true
+      controllerValue: "k8s.io/ingress-nginx"
+    service:
+      type: NodePort
+      nodePorts:
+        http: 30080
+
+ingress:
+  enabled: true
+  className: "nginx"
+  hosts:
+    - host: snippetshare.local
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+          backend:
+            service:
+              name: frontend
+              port:
+                number: 80
+
+postgresql:
+  enabled: true
+  auth:
+    postgresPassword: "postgrespassword"
+    database: "snippets"
